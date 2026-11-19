@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derives the `Parser` trait for a struct defining command-line arguments in addition to the standard SPDK Application Framework arguments."><title>Parser in spdk::cli - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="spdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0 (0ef1bc386 2026-11-09)" data-channel="1.100.0" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-1814ead3.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Parser</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../spdk/index.html">spdk</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Parser</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#field-types" title="Field Types">Field Types</a></li><li><a href="#attributes" title="Attributes">Attributes</a></li><li><a href="#help-text" title="Help Text">Help Text</a></li><li><a href="#usage" title="Usage">Usage</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In spdk::<wbr>cli</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">spdk</a>::<wbr><a href="index.html">cli</a></div><h1>Derive Macro <span class="derive">Parser</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>#[derive(Parser)]
+{
+    <span class="comment">// Attributes available to this derive:</span>
+    #[spdk_arg]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Derives the <a href="../../spdk/cli/trait.Parser.html"><code>Parser</code></a> trait for a struct defining command-line arguments in addition to the
+standard SPDK Application Framework arguments.</p>
+<p>This macro provides simple command-line argument parsing for SPDK applications and integrates
+with the <a href="../attr.main.html" title="attr spdk::main"><code>main</code></a> macro. It allows an application to extend the set of command-line
+arguments supported by the SPDK Event Framework. The derived struct will implement the
+<a href="../../spdk/cli/trait.Parser.html"><code>Parser</code></a> trait and its <code>parse</code> method can be passed to the <a href="../attr.main.html" title="attr spdk::main"><code>main</code></a> macro.</p>
+<p>If you need more advanced argument parsing, consider using a crate like <a href="https://crates.io/crates/clap"><code>clap</code></a> and create a
+runtime using the <a href="../../spdk/runtime/struct.Builder.html"><code>Builder</code></a> type.</p>
+<h2 id="field-types"><a class="doc-anchor" href="#field-types">§</a>Field Types</h2>
+<p>The type of each field in the derived struct must implement the <a href="https://doc.rust-lang.org/std/str/trait.FromStr.html"><code>FromStr</code></a> trait.</p>
+<p>Boolean fields are treated as flags and will be set to <code>true</code> if present on the command-line.
+The option supports an optional value containing <code>true</code> or <code>false</code> to explicitly set the value.</p>
+<h2 id="attributes"><a class="doc-anchor" href="#attributes">§</a>Attributes</h2>
+<p>The optional <code>spdk_arg</code> helper attribute can be used the customize the command-line behavior.
+The following metadata is supported by this attribute:</p>
+<ul>
+<li><code>short</code>: The short name of the argument, e.g. <code>short = 'C'</code>. If not present, no short argument
+will be generated.</li>
+<li><code>long</code>: The long name of the argument, e.g. <code>long = "block-count"</code>. If not present, the field
+name will be converted to a long argument by replacing any underscores (<code>'_'</code>) with dashes
+(<code>'-'</code>).</li>
+<li><code>default</code>: The default value for the argument, e.g. <code>default = 512</code>. If not present, the field
+type must implement the <a href="https://doc.rust-lang.org/std/default/trait.Default.html"><code>Default</code></a> trait.</li>
+<li><code>value_name</code>: The name of the value for the argument that will appear in the usage help text,
+e.g. <code>value_name = "SIZE"</code>. If not present, the value name will be derived from the field name
+by converting to uppercase and replacing underscores with dashes.</li>
+</ul>
+<h2 id="help-text"><a class="doc-anchor" href="#help-text">§</a>Help Text</h2>
+<p>The help text for the derived struct will be generated from the doc comments for each field.</p>
+<h2 id="usage"><a class="doc-anchor" href="#usage">§</a>Usage</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::path::PathBuf;
+
+<span class="kw">use </span>spdk::{<span class="self">self</span>, Uuid, cli::Parser};
+
+<span class="attr">#[derive(Debug, Parser)]
+</span><span class="kw">struct </span>Args {
+    <span class="doccomment">/// Path to the block device to use.
+    </span><span class="attr">#[spdk_arg(short = <span class="string">'D'</span>, value_name = <span class="string">"DEVICE"</span>)]
+    </span>device_path: PathBuf,
+
+    <span class="doccomment">/// The block size of the device in bytes.
+    </span><span class="attr">#[spdk_arg(default = <span class="number">512</span>, value_name = <span class="string">"SIZE"</span>)]
+    </span>block_size: u32,
+
+    <span class="doccomment">/// If specified, creates a new block device.
+    </span>create_new: bool,
+
+    <span class="doccomment">/// The UUID of the block device. If not specified, a new UUID will be generated.
+    </span><span class="attr">#[spdk_arg(default = Uuid::new(), value_name = <span class="string">"UUID"</span>)]
+    </span>uuid: Uuid,
+}
+
+<span class="attr">#[spdk::main(cli_args = Args::parse())]
+</span><span class="kw">async fn </span>main() {
+    <span class="kw">let </span>args = Args::get();
+
+    <span class="macro">println!</span>(<span class="string">"{:#?}"</span>, args);
+}</code></pre></div>
+<p>The following help text will be generated for the above example:</p>
+<div class="example-wrap"><pre class="language-text"><code>$ cli --help
+cli [options]
+options:
+ -c, --config &lt;config&gt;     JSON config file (default none)
+     --json &lt;config&gt;       JSON config file (default none)
+     --json-ignore-init-errors
+                           don&#39;t exit on invalid config entry
+ -d, --limit-coredump      do not set max coredump size to RLIM_INFINITY
+ -g, --single-file-segments
+                           force creating just one hugetlbfs file
+ -h, --help                show this usage
+ -i, --shm-id &lt;id&gt;         shared memory ID (optional)
+ -m, --cpumask &lt;mask or list&gt;    core mask (like 0xF) or core list of &#39;[]&#39; embraced (like [0,1,10]) for DPDK
+     --lcores &lt;list&gt;       lcore to CPU mapping list. The list is in the format:
+                           &lt;lcores[@CPUs]&gt;[&lt;,lcores[@CPUs]&gt;...]
+                           lcores and cpus list are grouped by &#39;(&#39; and &#39;)&#39;, e.g &#39;--lcores &quot;(5-7)@(10-12)&quot;&#39;
+                           Within the group, &#39;-&#39; is used for range separator,
+                           &#39;,&#39; is used for single number separator.
+                           &#39;( )&#39; can be omitted for single element group,
+                           &#39;@&#39; can be omitted if cpus and lcores have the same value
+ -n, --mem-channels &lt;num&gt;  channel number of memory channels used for DPDK
+ -p, --main-core &lt;id&gt;      main (primary) core for DPDK
+ -r, --rpc-socket &lt;path&gt;   RPC listen address (default /var/tmp/spdk.sock)
+ -s, --mem-size &lt;size&gt;     memory size in MB for DPDK (default: 0MB)
+     --disable-cpumask-locks    Disable CPU core lock files.
+     --silence-noticelog   disable notice level logging to stderr
+     --msg-mempool-size &lt;size&gt;  global message memory pool size in count (default: 262143)
+ -u, --no-pci              disable PCI access
+     --wait-for-rpc        wait for RPCs to initialize subsystems
+     --max-delay &lt;num&gt;     maximum reactor delay (in microseconds)
+ -B, --pci-blocked &lt;bdf&gt;
+                           pci addr to block (can be used more than once)
+ -R, --huge-unlink         unlink huge files after initialization
+ -v, --version             print SPDK version
+ -A, --pci-allowed &lt;bdf&gt;
+                           pci addr to allow (-B and -A cannot be used at the same time)
+     --huge-dir &lt;path&gt;     use a specific hugetlbfs mount to reserve memory from
+     --iova-mode &lt;pa/va&gt;   set IOVA mode (&#39;pa&#39; for IOVA_PA and &#39;va&#39; for IOVA_VA)
+     --base-virtaddr &lt;addr&gt;      the base virtual address for DPDK (default: 0x200000000000)
+     --num-trace-entries &lt;num&gt;   number of trace entries for each core, must be power of 2, setting 0 to disable trace (default 32768)
+                                 Tracepoints vary in size and can use more than one trace entry.
+     --rpcs-allowed        comma-separated list of permitted RPCS
+     --env-context         Opaque context for use of the env implementation
+     --vfio-vf-token       VF token (UUID) shared between SR-IOV PF and VFs for vfio_pci driver
+ -L, --logflag &lt;flag&gt;    enable log flag (all, app_config, app_rpc, json_util, log, log_rpc, reactor, rpc, rpc_client, thread, trace)
+ -e, --tpoint-group &lt;group-name&gt;[:&lt;tpoint_mask&gt;]
+                           group_name - tracepoint group name for spdk trace buffers (thread, all)
+                           tpoint_mask - tracepoint mask for enabling individual tpoints inside a tracepoint group. First tpoint inside a group can be enabled by setting tpoint_mask to 1 (e.g. bdev:0x1).
+                            Groups and masks can be combined (e.g. thread,bdev:0x1).
+                            All available tpoints can be found in /include/spdk_internal/trace_defs.h
+  -D, --device-path &lt;DEVICE&gt;
+                           Path to the block device to use.
+      --block-size &lt;SIZE&gt;  The block size of the device in bytes.
+      --create-new [CREATE_NEW]
+                           If specified, creates a new block device.</code></pre></div></div></details></section></div></main></body></html>

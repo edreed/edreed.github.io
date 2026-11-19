@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cpu_cores","numa_nodes"],"struct":["CpuCore","CpuCores","CpuSet","NumaNode"]};

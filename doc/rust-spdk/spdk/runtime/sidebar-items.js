@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_shutting_down","reactors","shutdown","spawn_local","spawn_local_detached","wait_for_shutdown"],"struct":["Builder","Reactor","Runtime"]};

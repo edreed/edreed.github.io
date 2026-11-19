@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["application","block_on","is_application","polled_fn","polled_fn_with_period","spawn","spawn_detached","spawn_local","spawn_local_detached","try_with_current","with_current"],"struct":["App","Owned","OwnedBy","PolledFn","Poller","Promise","Promissory","Thread","ThreadCell","Unowned"],"trait":["AsRawThread","Polled"]};

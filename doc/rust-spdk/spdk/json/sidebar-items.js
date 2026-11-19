@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","RpcInfallible"],"fn":["from_str","rpc_call","to_string"],"struct":["Deserializer","RpcError","Serializer"],"trait":["RpcCall"],"type":["Result"]};
