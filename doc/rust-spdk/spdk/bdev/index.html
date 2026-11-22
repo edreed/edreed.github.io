@@ -18,7 +18,8 @@ this support.</p>
 <p>The first step is to define a <code>struct</code> representing the context of your custom BDev. Provide the
 custom BDev’s implementation using the <a href="trait.BDevOps.html" title="trait spdk::bdev::BDevOps"><code>BDevOps</code></a> trait. If necessary, you can also provide
 channel- and/or I/O-specific contexts by defining a <code>struct</code> for each and tying them to your
-custom BDev through the <a href="trait.BDevOps.html#associatedtype.ChannelContext" title="associated type spdk::bdev::BDevOps::ChannelContext"><code>BDevOps::ChannelContext</code></a> and [<code>BDevOps::IoContext] associated types,  respectively. These associated types can be assigned the unit (</code>()`) type if no additional
+custom BDev through the <a href="trait.BDevOps.html#associatedtype.ChannelContext" title="associated type spdk::bdev::BDevOps::ChannelContext"><code>BDevOps::ChannelContext</code></a> and <a href="trait.BDevOps.html#associatedtype.IoContext" title="associated type spdk::bdev::BDevOps::IoContext"><code>BDevOps::IoContext</code></a> associated types,
+respectively. These associated types can be assigned the unit (<code>()</code>) type if no additional
 context is needed by your custom BDev.</p>
 <p>Next, define a <code>struct</code> representing the global module context for your custom BDev. Provide the
 custom BDev’s implementation using the <a href="trait.ModuleOps.html" title="trait spdk::bdev::ModuleOps"><code>ModuleOps</code></a> trait, assigning your custom BDev <code>struct</code>
