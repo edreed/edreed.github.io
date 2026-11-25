@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `spdk/src/task/remote_task.rs`."><title>remote_task.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1f5a765c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="spdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (65ce8611f 2026-11-18)" data-channel="nightly" data-search-js="search-69faa2c4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">spdk/task/</div>remote_task.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `spdk/src/task/remote_task.rs`."><title>remote_task.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="spdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (20fe935d5 2026-11-23)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">spdk/task/</div>remote_task.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
 <a href=#2 id=2 data-nosnippet>2</a>    cell::RefCell,
 <a href=#3 id=3 data-nosnippet>3</a>    future::Future,
 <a href=#4 id=4 data-nosnippet>4</a>    marker::PhantomData,
@@ -21,7 +21,7 @@
 <a href=#21 id=21 data-nosnippet>21</a>/// Framework.
 <a href=#22 id=22 data-nosnippet>22</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>ArcTask: TaskBase {
 <a href=#23 id=23 data-nosnippet>23</a>    <span class="doccomment">/// The type of value produced by the task when it completes.
-<a href=#24 id=24 data-nosnippet>24</a>    </span><span class="kw">type </span>Output: Send + <span class="lifetime">'static</span>;
+<a href=#24 id=24 data-nosnippet>24</a>    </span><span class="kw">type </span>Output: Send;
 <a href=#25 id=25 data-nosnippet>25</a>
 <a href=#26 id=26 data-nosnippet>26</a>    <span class="doccomment">/// Schedules a task for execution on its target, consuming the task in the process.
 <a href=#27 id=27 data-nosnippet>27</a>    </span><span class="kw">fn </span>schedule(arc_self: Arc&lt;<span class="self">Self</span>&gt;) {
@@ -139,7 +139,7 @@
 <a href=#139 id=139 data-nosnippet>139</a><span class="kw">where
 <a href=#140 id=140 data-nosnippet>140</a>    </span>E: Executor + <span class="lifetime">'static</span>,
 <a href=#141 id=141 data-nosnippet>141</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
-<a href=#142 id=142 data-nosnippet>142</a>    R: Send + <span class="lifetime">'static</span>,
+<a href=#142 id=142 data-nosnippet>142</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#143 id=143 data-nosnippet>143</a>{
 <a href=#144 id=144 data-nosnippet>144</a>    executor: E,
 <a href=#145 id=145 data-nosnippet>145</a>    result: Mutex&lt;ResultState&lt;R&gt;&gt;,
@@ -151,7 +151,7 @@
 <a href=#151 id=151 data-nosnippet>151</a><span class="kw">where
 <a href=#152 id=152 data-nosnippet>152</a>    </span>E: Executor + <span class="lifetime">'static</span>,
 <a href=#153 id=153 data-nosnippet>153</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
-<a href=#154 id=154 data-nosnippet>154</a>    R: Send + <span class="lifetime">'static</span>,
+<a href=#154 id=154 data-nosnippet>154</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#155 id=155 data-nosnippet>155</a>{
 <a href=#156 id=156 data-nosnippet>156</a>}
 <a href=#157 id=157 data-nosnippet>157</a>
@@ -159,7 +159,7 @@
 <a href=#159 id=159 data-nosnippet>159</a><span class="kw">where
 <a href=#160 id=160 data-nosnippet>160</a>    </span>E: Executor + <span class="lifetime">'static</span>,
 <a href=#161 id=161 data-nosnippet>161</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
-<a href=#162 id=162 data-nosnippet>162</a>    R: Send + <span class="lifetime">'static</span>,
+<a href=#162 id=162 data-nosnippet>162</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#163 id=163 data-nosnippet>163</a>{
 <a href=#164 id=164 data-nosnippet>164</a>    <span class="doccomment">/// Constructs a new `RemoteTask` from a [`Future`] to be scheduled on the specified [`Executor`].
 <a href=#165 id=165 data-nosnippet>165</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(executor: E, fut: F) -&gt; Arc&lt;<span class="self">Self</span>&gt; {
@@ -175,7 +175,7 @@
 <a href=#175 id=175 data-nosnippet>175</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, F, R&gt; TaskBase <span class="kw">for </span>RemoteTask&lt;<span class="lifetime">'a</span>, Reactor, F, R&gt;
 <a href=#176 id=176 data-nosnippet>176</a><span class="kw">where
 <a href=#177 id=177 data-nosnippet>177</a>    </span>F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
-<a href=#178 id=178 data-nosnippet>178</a>    R: Send + <span class="lifetime">'static</span>,
+<a href=#178 id=178 data-nosnippet>178</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#179 id=179 data-nosnippet>179</a>{
 <a href=#180 id=180 data-nosnippet>180</a>    <span class="kw">fn </span>executor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Executor + <span class="lifetime">'static </span>{
 <a href=#181 id=181 data-nosnippet>181</a>        <span class="self">self</span>.executor
@@ -186,7 +186,7 @@
 <a href=#186 id=186 data-nosnippet>186</a><span class="kw">where
 <a href=#187 id=187 data-nosnippet>187</a>    </span>T: AsRawThread,
 <a href=#188 id=188 data-nosnippet>188</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
-<a href=#189 id=189 data-nosnippet>189</a>    R: Send + <span class="lifetime">'static</span>,
+<a href=#189 id=189 data-nosnippet>189</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#190 id=190 data-nosnippet>190</a>{
 <a href=#191 id=191 data-nosnippet>191</a>    <span class="kw">fn </span>executor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Executor + <span class="lifetime">'static </span>{
 <a href=#192 id=192 data-nosnippet>192</a>        <span class="comment">// SAFETY: The scheduling implementation only uses the returned owned thread instance for
@@ -198,8 +198,8 @@
 <a href=#198 id=198 data-nosnippet>198</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, E, F, R&gt; ArcTask <span class="kw">for </span>RemoteTask&lt;<span class="lifetime">'a</span>, E, F, R&gt;
 <a href=#199 id=199 data-nosnippet>199</a><span class="kw">where
 <a href=#200 id=200 data-nosnippet>200</a>    </span>E: Executor + <span class="lifetime">'static</span>,
-<a href=#201 id=201 data-nosnippet>201</a>    R: Send + <span class="lifetime">'static</span>,
-<a href=#202 id=202 data-nosnippet>202</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
+<a href=#201 id=201 data-nosnippet>201</a>    F: Future&lt;Output = R&gt; + <span class="lifetime">'a</span>,
+<a href=#202 id=202 data-nosnippet>202</a>    R: Send + <span class="lifetime">'a</span>,
 <a href=#203 id=203 data-nosnippet>203</a>    RemoteTask&lt;<span class="lifetime">'a</span>, E, F, R&gt;: TaskBase,
 <a href=#204 id=204 data-nosnippet>204</a>{
 <a href=#205 id=205 data-nosnippet>205</a>    <span class="kw">type </span>Output = R;
