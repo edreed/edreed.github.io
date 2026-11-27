@@ -65,10 +65,10 @@ zeroed buffers for reads:</p>
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>handle_io(
-        _this: <span class="kw-2">&amp;</span>BDevImpl&lt;<span class="self">Self</span>&gt;,
-        _channel: <span class="kw-2">&amp;</span>IoChannelImpl&lt;()&gt;,
-        io: <span class="kw-2">&amp;mut </span>IoRequest&lt;()&gt;,
+    <span class="kw">async fn </span>handle_io&lt;<span class="lifetime">'io</span>&gt;(
+        _this: <span class="kw-2">&amp;</span><span class="lifetime">'io </span>BDevImpl&lt;<span class="self">Self</span>&gt;,
+        _channel: <span class="kw-2">&amp;</span><span class="lifetime">'io </span>IoChannelImpl&lt;<span class="self">Self</span>::ChannelContext&gt;,
+        io: <span class="kw-2">&amp;</span><span class="lifetime">'io </span><span class="kw-2">mut </span>IoRequest&lt;<span class="self">Self</span>::IoContext&gt;,
     ) -&gt; spdk::Result&lt;()&gt; {
         <span class="kw">if </span>io.io_type() == IoType::Read {
             <span class="kw">let </span>dst = io.buffers_mut();
